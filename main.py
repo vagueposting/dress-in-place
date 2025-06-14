@@ -4,7 +4,8 @@ import numpy as np
 
 from sprites import load_sprite, load_sprite_batch
 from layers import draw_character
-from config import CANVAS_WIDTH, CANVAS_HEIGHT, LAYER_ORDER, CHARACTER_POS_X, CHARACTER_POS_Y
+from config import *
+from ui import *
 
 def main():
     root = Tk()  # Step 1: Create the main window
@@ -12,13 +13,16 @@ def main():
     canvas.pack()
     canvas.tk_images = [] 
 
-    set_up(canvas)
-
     # Define gradients
 
     # Load sprites
     # For multiple pieces, use load_sprite_batch()
-    sprites = {
+    ui = {
+        'bg': load_ui('bg_root'),
+        'sidebar': load_ui('ui_sidebar'),
+        'speech-bubble': load_ui('ui_speech-bubble')
+    }
+    girl_sprites = {
         # Body parts: head, torso-and-legs, lower-arms-hair, eyes, mouth
         'head': load_sprite('head'),
         'torso-and-legs': load_sprite('torso-and-legs'),
@@ -35,6 +39,10 @@ def main():
         'collar': load_sprite('collar'),
         'lower-sleeves': load_sprite('blousearms')
     }
+    # TODO: Make this into a dictionary of dictionaries.
+    options = {'recolorable': ('hair', 'mouth',
+                               'skirt', 'socks'),
+                'non-recolorable': ('mouth')}
 
     test_selections = {
         'hair': 3,
@@ -45,10 +53,12 @@ def main():
         'shoes': 0,
     }
 
-    draw_character(canvas, sprites, CHARACTER_POS_X, CHARACTER_POS_Y, test_selections)
+    set_up(root, canvas, ui)
+    draw_character(canvas, girl_sprites, CHARACTER_POS_X, CHARACTER_POS_Y, test_selections)
 
     """
     TEST CODE BELOW!!
+    TODO: Write the actual code, then remove!
     # Load your grayscale sprite (must be black/white line art)
     head = Image.open("img/small/head.png").convert('RGBA')
     hair = Image.open("img/small/hair1.png").convert('RGBA')
@@ -74,33 +84,9 @@ def main():
 
     root.mainloop()  # Step 4: Start the GUI loop
 
-"""
+"""O
 Helper functions below
 """
-
-def set_up(canvas):
-    # Creates a setup.
-    # remember: left_x, top_y, right_x, bottom_y
-
-    # Draw the sidebar
-    # TODO: Replace with actual graphics.
-    canvas.create_rectangle(0,
-                            0, 
-                            CANVAS_WIDTH / 3, 
-                            CANVAS_HEIGHT, 
-                            fill='aquamarine')
-    
-    center_x = CANVAS_WIDTH / 6  # Half of the sidebar width (since sidebar is CANVAS_WIDTH/3)
-    center_y = CANVAS_HEIGHT / 10  # Same vertical position
-
-    canvas.create_text(
-        center_x,
-        center_y,
-        anchor='center',
-        justify='center',
-        font=('Arial', 11),
-        text="Welcome!\nI'm getting ready for school,\nand I really need your help!"
-    )
     
 if __name__ == '__main__':
     main()

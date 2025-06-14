@@ -4,7 +4,6 @@ import numpy as np
 
 def load_sprite(part_name):
     pil_image = Image.open(f'img/small/{part_name}.png').convert('RGBA')
-
     return pil_image
 
 def load_sprite_batch(part_name, number_of_opts):
