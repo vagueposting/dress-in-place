@@ -35,7 +35,7 @@ def main():
         # Clothing: shoes, socks, skirt, blouse, tie, collar, lower sleeves
         'socks': load_sprite_batch('socks', 3),   
         'shoes': load_sprite_batch('shoes', 2),
-        'skirt': load_sprite_batch('skirt', 2),
+        'skirt': load_sprite_batch('skirt', 3),
         'blouse': load_sprite('blousetorso'),
         'tie': load_sprite_batch('tie', 3),
         'collar': load_sprite('collar'),
@@ -46,6 +46,7 @@ def main():
                'hair': define_option('Hairstyle', True, 4),
                 'eyes': define_option('Eyes', True, 3),
                 'mouth': define_option('Mouth', False, 3),
+                'tie': define_option('Tie', False, 3),
                 'skirt': define_option('Skirt', True, 3),
                 'socks': define_option('Socks', True, 3),
                 'shoes': define_option('Shoes', False, 2)
@@ -54,12 +55,19 @@ def main():
     # Save sprite data to root
     root.sprites = girl_sprites
     root.selections = {
+        'body': 0,
         'hair': 0,
         'eyes': 0,
         'mouth': 0,
         'skirt': 0,
         'socks': 0,
         'shoes': 0,
+    }
+    root.gradient_selections = {
+        'body': SKIN_GRADIENTS['Light Warm'],
+        'hair': HAIR_GRADIENTS['Black'],
+        'eyes': EYE_GRADIENTS['Brown'],
+        'socks': SOCK_GRADIENTS['White']
     }
 
     # Draw background and sidebar first
@@ -74,9 +82,7 @@ def main():
     # Set up the main menu
     set_up(root)
     
-    draw_character(canvas, girl_sprites, 
-                   CHARACTER_POS_X, CHARACTER_POS_Y, 
-                   root.selections)
+    redraw_character(canvas, root)
 
     root.mainloop()  # Step 4: Start the GUI loop
 

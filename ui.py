@@ -5,19 +5,26 @@ from config import *
 from layers import redraw_character
 
 def set_up(root):
-    # Clear any existing customization frame
+    # Clear customization frame but preserve selections
     if hasattr(root, 'customization_frame'):
         root.customization_frame.destroy()
         del root.customization_frame
     
-    # Get references from root
+    # Redraw main menu
     canvas = root.canvas
     ui = root.ui
-    options = root.options
     
-    # Draw main menu buttons
+    # Redraw sidebar
+    canvas.create_image(0, 0, anchor='nw', image=ui['bg'])
+    canvas.create_image(0, 0, anchor='nw', image=ui['sidebar'])
+    
+    # Redraw character with current selections
+    if hasattr(root, 'selections') and hasattr(root, 'gradient_selections'):
+        redraw_character(canvas, root)
+    
+    # Redraw menu buttons
     root.main_menu_buttons = draw_menu(
-        root, options, 
+        root, root.options, 
         starting_x=SIDEBAR_MAX // 5,
         starting_y=CANVAS_HEIGHT // 6, 
         width_px=70,
@@ -79,79 +86,87 @@ def show_customize_screen(parent, part_name):
 
     # Create customization panel
     frame = Frame(parent, 
-                  width=SIDEBAR_MAX, 
-                  height=CANVAS_HEIGHT,
-                  bg='white')  # Match sidebar color
+                 width=SIDEBAR_MAX, 
+                 height=CANVAS_HEIGHT,
+                 bg='white')
     frame.place(x=0, y=0)
     parent.customization_frame = frame
 
-    # Back button - returns to main menu
+    # Back button
     back_btn = Button(frame, text='← Back',
-                      command=lambda: set_up(parent),
-                      fg='black',
-                      bd=2,
-                      bg='#edbe6d',
-                      relief='flat',
-                      highlightthickness=2,
-                      highlightbackground='black')
+                     command=lambda: set_up(parent),
+                     fg='black',
+                     bd=2,
+                     bg='#edbe6d',
+                     relief='flat',
+                     highlightthickness=2,
+                     highlightbackground='black')
     back_btn.place(x=20, y=20)
 
     # Title
     Label(frame, 
-          text=f'Customize: {part_name}', 
-          font=('Arial', 14),
-          bg='white').place(x=20, y=60)
+         text=f'Customize: {part_name}', 
+         font=('Arial', 14),
+         bg='white').place(x=20, y=60)
 
-    if part_name == 'Hairstyle':
-        styles = ['Bob', 'Idol-inspired', 'Long', 'Pixie']
-        colors = ['Blonde', 'Brunette', 'Redhead']
-        create_dropdown(frame, x=20, y=100, label='Hairstyle', options=styles,
-                        part_key='hair', canvas=parent.canvas, root=parent)
-        create_dropdown(frame, x=20, y=170, label='Hair Color', options=colors,
-                        part_key='hair', canvas=parent.canvas, root=parent)
-    elif part_name == 'Eyes':
-        styles = ['Tareme', 'Flat', 'Tsurime']
-        colors = ['Blue', 'Brown', 'Green']
-        create_dropdown(frame, x=20, y=100, label='Eye Style', options=styles,
-                        part_key='eyes', canvas=parent.canvas, root=parent)
-        create_dropdown(frame, x=20, y=170, label='Eye Color', options=colors)
-    elif part_name == 'Mouth':
-        styles = ['Smile', 'Meh', 'Frown']
-        create_dropdown(frame, x=20, y=100, label='Mouth Style', options=styles,
-                        part_key='mouth', canvas=parent.canvas, root=parent)
+    # Create controls dynamically
+    y_position = 100
+    if part_name in CUSTOMIZATION_OPTIONS:
+        for option_type, (label, options, part_key) in CUSTOMIZATION_OPTIONS[part_name].items():
+            current_selection = 0  # Default to first option
+            
+            # For color options, find current selection if it exists
+            if option_type == 'color' and hasattr(parent, 'gradient_selections'):
+                current_gradient = parent.gradient_selections.get(part_key)
+                if current_gradient and part_key in GRADIENT_MAPPING:
+                    # Find which named gradient matches our current gradient
+                    for name, gradient in GRADIENT_MAPPING[part_key].items():
+                        if gradient == current_gradient:
+                            try:
+                                current_selection = options.index(name)
+                            except ValueError:
+                                current_selection = 0
+                            break
 
-def create_dropdown(parent, x, y, label, options, part_key, canvas, root):
+            create_dropdown(
+                frame, x=20, y=y_position,
+                label=label,
+                options=options,
+                part_key=part_key,
+                option_type=option_type,
+                current_index=current_selection,
+                canvas=parent.canvas,
+                root=parent
+            )
+            y_position += 70
+
+def create_dropdown(parent, x, y, label, options, part_key=None, option_type=None, current_index=0, canvas=None, root=None):
     Label(parent, text=label, bg='white').place(x=x, y=y)
 
     selected = StringVar(parent)
-    selected.set(options[0])
+    selected.set(options[current_index] if current_index < len(options) else options[0])
 
     def on_change(*_):
-        index = options.index(selected.get())
-        gradient_colors = None
+        try:
+            index = options.index(selected.get())
+            
+            if option_type == 'style':
+                root.selections[part_key] = index
+            elif option_type == 'color':
+                if not hasattr(root, 'gradient_selections'):
+                    root.gradient_selections = {}
+                
+                # Handle special body case
+                if part_key == 'body':
+                    gradient_name = selected.get()
+                    root.gradient_selections['body'] = GRADIENT_MAPPING['body']['gradients'][gradient_name]
+                else:
+                    gradient_name = selected.get()
+                    root.gradient_selections[part_key] = GRADIENT_MAPPING[part_key][gradient_name]
 
-        # If it's a style (like "Hairstyle"), update sprite index
-        if 'style' in label.lower():
-            root.selections[part_key] = index
-            # Clear any previous gradient override for this part
-            if hasattr(root, 'gradient_selections'):
-                root.gradient_selections[part_key] = index  # Optional fallback
-
-        # If it's a color (like "Hair Color"), update gradient
-        elif 'color' in label.lower():
-            # Get the gradient based on selection
-            if part_key == 'hair':
-                gradient_colors = list(HAIR_GRADIENTS.values())[index]
-            elif part_key == 'eyes':
-                gradient_colors = list(EYE_GRADIENTS.values())[index]
-
-            # Store gradient selection
-            if not hasattr(root, 'gradient_selections'):
-                root.gradient_selections = {}
-
-            root.gradient_selections[part_key] = gradient_colors
-
-        redraw_character(canvas, root)
+            redraw_character(canvas, root)
+        except Exception as e:
+            print(f"Error in dropdown change: {e}")
 
     selected.trace_add("write", on_change)
 
