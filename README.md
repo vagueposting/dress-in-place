@@ -12,6 +12,9 @@ This is a proof-of-concept alpha, and I would like to expand on it in the future
 
 But making assets takes time... So I'll have to put that in my schedule.
 
+## How to Run
+~~I don't know yet how to compile stuff.~~ Download the repository and run main.py.
+
 # Credits
 All visual assets were hand-drawn save for the sidebar, thanks to Texture Labs for the torn paper graphic. (You know that stereotype where school-based games love using paper-themed UI elements? Yup.)
 
