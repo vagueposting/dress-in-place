@@ -39,11 +39,19 @@ def main():
         'collar': load_sprite('collar'),
         'lower-sleeves': load_sprite('blousearms')
     }
-    # TODO: Make this into a dictionary of dictionaries.
-    options = {'recolorable': ('hair', 'mouth',
-                               'skirt', 'socks'),
-                'non-recolorable': ('mouth')}
 
+    options = {'hair': define_option('Hairstyle', True, 4),
+               'body': define_option('Body', True, 1),
+               'eyes': define_option('Eyes', True, 3),
+               'mouth': define_option('Mouth', False, 3),
+               'skirt': define_option('Skirt', True, 3),
+               'socks': define_option('Socks', True, 3),
+               'shoes': define_option('Shoes', False, 2)
+               }
+    
+    # TODO: Set up gradients
+
+    
     test_selections = {
         'hair': 3,
         'eyes': 0,
@@ -53,7 +61,7 @@ def main():
         'shoes': 0,
     }
 
-    set_up(root, canvas, ui)
+    set_up(root, canvas, ui, options)
     draw_character(canvas, girl_sprites, CHARACTER_POS_X, CHARACTER_POS_Y, test_selections)
 
     """

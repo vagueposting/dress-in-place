@@ -17,3 +17,8 @@ LAYER_ORDER = ('head',
                 'collar',
                 'lower-arms',
                 'lower-sleeves')
+
+def define_option(name, recolorable=True, batch_size=1):
+    return {'name': name,
+        'recolorable': recolorable,
+        'batch_size': batch_size}
