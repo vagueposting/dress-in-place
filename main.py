@@ -2,7 +2,7 @@ from tkinter import *
 from PIL import ImageTk, Image
 import numpy as np
 
-from sprites import load_sprite, load_sprite_batch
+from sprites import *
 from layers import draw_character
 from config import *
 from ui import *
@@ -11,7 +11,9 @@ def main():
     root = Tk()  # Step 1: Create the main window
     canvas = Canvas(root, width=CANVAS_WIDTH, height=CANVAS_HEIGHT)
     canvas.pack()
-    canvas.tk_images = [] 
+    canvas.configure(scrollregion=canvas.bbox("all")) 
+    root.resizable(width=False, height=False)
+    canvas.tk_images = []
 
     # Define gradients
 
@@ -40,61 +42,47 @@ def main():
         'lower-sleeves': load_sprite('blousearms')
     }
 
-    options = {'hair': define_option('Hairstyle', True, 4),
-               'body': define_option('Body', True, 1),
-               'eyes': define_option('Eyes', True, 3),
-               'mouth': define_option('Mouth', False, 3),
-               'skirt': define_option('Skirt', True, 3),
-               'socks': define_option('Socks', True, 3),
-               'shoes': define_option('Shoes', False, 2)
-               }
+    options = {'body': define_option('Body', True, 1),
+               'hair': define_option('Hairstyle', True, 4),
+                'eyes': define_option('Eyes', True, 3),
+                'mouth': define_option('Mouth', False, 3),
+                'skirt': define_option('Skirt', True, 3),
+                'socks': define_option('Socks', True, 3),
+                'shoes': define_option('Shoes', False, 2)
+                }
     
-    # TODO: Set up gradients
-
-    
-    test_selections = {
-        'hair': 3,
+    # Save sprite data to root
+    root.sprites = girl_sprites
+    root.selections = {
+        'hair': 0,
         'eyes': 0,
         'mouth': 0,
-        'skirt': 1,
-        'socks': 1,
+        'skirt': 0,
+        'socks': 0,
         'shoes': 0,
     }
 
-    set_up(root, canvas, ui, options)
-    draw_character(canvas, girl_sprites, CHARACTER_POS_X, CHARACTER_POS_Y, test_selections)
-
-    """
-    TEST CODE BELOW!!
-    TODO: Write the actual code, then remove!
-    # Load your grayscale sprite (must be black/white line art)
-    head = Image.open("img/small/head.png").convert('RGBA')
-    hair = Image.open("img/small/hair1.png").convert('RGBA')
-
-    # Define a gradient using hex codes
-    gradient_colors = ["#872222", "#834611", "#ffe5be"]  # Red → Pink → White
-
-    # Create gradient map
-    gradient = create_gradient_map(gradient_colors, size=(256, 1))
-
-    # Apply gradient to sprite
-    recolored_head = apply_gradient(head, gradient)
-
-    # Convert to Tkinter-compatible image
-    tk_sprite = ImageTk.PhotoImage(recolored_head)
-    tk_hair = ImageTk.PhotoImage(hair)
-
-    # Draw on canvas
-    canvas.create_image(CHARACTER_POS_X, CHARACTER_POS_Y, image=tk_sprite)
-    canvas.create_image(CHARACTER_POS_X, CHARACTER_POS_Y, anchor='center', image=tk_hair)
-    canvas.tk_sprite = tk_sprite  # Keep reference!
-    """
+    # Draw background and sidebar first
+    canvas.create_image(0, 0, anchor='nw', image=ui['bg'])
+    canvas.create_image(0, 0, anchor='nw', image=ui['sidebar'])
+    
+    # Store references on root for later access
+    root.canvas = canvas
+    root.ui = ui
+    root.options = options
+    
+    # Set up the main menu
+    set_up(root)
+    
+    draw_character(canvas, girl_sprites, 
+                   CHARACTER_POS_X, CHARACTER_POS_Y, 
+                   root.selections)
 
     root.mainloop()  # Step 4: Start the GUI loop
 
-"""O
+'''O
 Helper functions below
-"""
+'''
     
 if __name__ == '__main__':
     main()

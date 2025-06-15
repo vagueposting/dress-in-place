@@ -56,8 +56,8 @@ def apply_gradient(sprite, gradient):
     recolored_g = Image.fromarray(recolored_g)
     recolored_b = Image.fromarray(recolored_b)
 
-    recolored_image = Image.merge("RGB", (recolored_r, recolored_g, recolored_b))
-    final_image = Image.new("RGBA", sprite.size)
+    recolored_image = Image.merge('RGB', (recolored_r, recolored_g, recolored_b))
+    final_image = Image.new('RGBA', sprite.size)
     final_image.paste(recolored_image, mask=Image.fromarray(alpha))
 
     return final_image

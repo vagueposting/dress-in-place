@@ -18,6 +18,16 @@ LAYER_ORDER = ('head',
                 'lower-arms',
                 'lower-sleeves')
 
+# TODO: Set up gradients
+HAIR_GRADIENTS = {
+    'blonde': ['#ed984a', '#f0c97d', '#faf4bd'],
+    'brunette': ['#59312c', '#694838', '#786148'],
+    'black': ['#111822', '#2f313e', '#504d5c']
+}
+
+EYE_GRADIENTS = {'brown': ['#59312c', '#694838', '#786148'],
+                 'black': ['#111822', '#5b7f79', '#ededc4']}
+
 def define_option(name, recolorable=True, batch_size=1):
     return {'name': name,
         'recolorable': recolorable,
