@@ -25,7 +25,7 @@ SKIN_GRADIENTS = {
     'Light Warm': ['#916b55', '#c0a188', '#f0dac1'],
     'Mid Warm': ['#825538', '#a47758', '#c79a7a'],
     'Dark Warm': ['#602915', '#723d23', '#855132'],
-    'Light Cool': ['#9c5e5e', '#ca908c', '#f9c5be'],
+    'Light Cool': ['#9c5e5e', '#ca908c', "#fbe8dd"],
     'Mid Cool': ['#8b4b4b', '#ac6f68', '#cd9588'],
     'Dark Cool': ['#421010', '#612c25', '#80483c']
 }

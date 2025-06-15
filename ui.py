@@ -105,7 +105,7 @@ def show_customize_screen(parent, part_name):
 
     # Title
     Label(frame, 
-         text=f'Customize: {part_name}', 
+         text=f'{part_name}', 
          font=('Arial', 14),
          bg='white').place(x=20, y=60)
 
